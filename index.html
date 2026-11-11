@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>TERMÓMETRO DE LA TIERRA</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Leaflet: mapa navegable -->
+  <link rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+  <!-- p5.js y sonido -->
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.13/lib/p5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.13/lib/addons/p5.sound.min.js"></script>
+
+  <!-- Chart.js: gráfica -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Leaflet -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+
+<body>
+
+  <main class="experiencia">
+
+    <!-- PANEL LATERAL -->
+    <aside class="panel">
+
+      <header class="encabezado">
+        <span class="etiqueta">NASA GISTEMP · 1926—ACTUALIDAD</span>
+        <h1>TERMÓMETRO<br>DE LA TIERRA</h1>
+        <p>Un siglo de transformación climática.</p>
+      </header>
+
+      <!-- SELECTORES -->
+      <section class="controles">
+        <h2>Explora el tiempo</h2>
+
+        <div class="fechas">
+          <div class="campo">
+            <label for="fechaInicio">DESDE</label>
+            <input type="month" id="fechaInicio"
+              min="1926-01" value="1926-01">
+          </div>
+
+          <div class="campo">
+            <label for="fechaFinal">HASTA</label>
+            <input type="month" id="fechaFinal"
+              min="1926-01" value="2026-12">
+          </div>
+        </div>
+
+        <button id="aplicarFechas" class="boton-principal">
+          Explorar período
+        </button>
+
+        <section class="paris">
+          <h3>Acuerdo de París</h3>
+          <label>
+            <input type="checkbox" id="mostrarParis" checked>
+            Mostrar umbrales de calentamiento
+          </label>
+          <div class="umbrales">
+            <span>1,5 °C</span>
+            <span>2,0 °C</span>
+          </div>
+        </section>
+
+        <div class="acciones">
+          <button id="restablecer" class="boton-secundario">
+            Restablecer
+          </button>
+
+          <button id="sonido" class="boton-secundario">
+            Activar sonido
+          </button>
+        </div>
+      </section>
+
+      <!-- INDICADORES -->
+      <section class="estadisticas">
+        <span class="etiqueta">ANOMALÍA MEDIA DEL PERÍODO</span>
+        <div id="valorAnomalia">-- °C</div>
+        <p id="textoPeriodo">1926 – 2026</p>
+      </section>
+
+      <!-- GRÁFICA -->
+      <section class="grafica">
+        <h2>Evolución térmica</h2>
+        <p>Anomalía mensual (°C)</p>
+        <div class="contenedor-grafica">
+          <canvas id="graficaTemperatura"></canvas>
+        </div>
+      </section>
+
+      <footer>
+        Datos: NASA GISS · GISTEMP v4
+      </footer>
+
+    </aside>
+
+    <!-- MAPA -->
+    <section class="mapa-contenedor">
+      <div id="mapa"></div>
+
+      <div class="leyenda">
+        <span>Frío relativo</span>
+        <div class="escala"></div>
+        <span>Calentamiento</span>
+      </div>
+
+      <div class="indicador-mapa">
+        <span>PERÍODO EXPLORADO</span>
+        <strong id="periodoMapa">1926 — 2026</strong>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="mapa.js"></script>
+  <script src="sketch.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,293 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #11151D;
+  color: #F4F2ED;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+.experiencia {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+}
+
+/* PANEL IZQUIERDO */
+
+.panel {
+  width: 29%;
+  min-width: 310px;
+  max-width: 420px;
+  height: 100vh;
+  background: #171C26;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-x: hidden;   /* sin scroll horizontal */
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.panel > * {
+  min-width: 0;
+}
+
+.etiqueta {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: #A5ACB8;
+}
+
+.encabezado h1 {
+  font-size: clamp(24px, 2.5vw, 34px);
+  line-height: 1.05;
+  margin: 12px 0;
+  letter-spacing: -1px;
+}
+
+.encabezado p,
+.grafica p {
+  color: #A5ACB8;
+  font-size: 12px;
+}
+
+h2 {
+  font-size: 16px;
+  margin-bottom: 14px;
+}
+
+/* FECHAS */
+
+.fechas,
+.acciones {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+}
+
+.campo {
+  background: #252C38;
+  padding: 12px;
+  border-radius: 8px;
+  min-width: 0;
+}
+
+.campo label {
+  display: block;
+  font-size: 10px;
+  color: #A5ACB8;
+  margin-bottom: 8px;
+}
+
+.campo input {
+  width: 100%;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: bold;
+  color-scheme: dark;   /* icono del calendario visible */
+}
+
+/* BOTONES */
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 7px;
+  padding: 12px;
+  font-size: 12px;
+  transition: .2s;
+}
+
+button:hover {
+  filter: brightness(1.2);
+}
+
+.boton-principal {
+  width: 100%;
+  margin-top: 12px;
+  background: #E66B42;
+  color: white;
+  font-weight: bold;
+}
+
+.boton-secundario {
+  background: #303846;
+  color: white;
+  min-width: 0;
+}
+
+/* ACUERDO DE PARÍS */
+
+.paris {
+  margin-top: 20px;
+  background: #252C38;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.paris h3 {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.paris label {
+  font-size: 11px;
+  color: #C5CAD2;
+}
+
+.umbrales {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 14px;
+  font-weight: bold;
+  color: #F18A48;
+  font-size: 13px;
+}
+
+/* ESTADÍSTICAS */
+
+.estadisticas {
+  padding: 15px;
+  background: #252C38;
+  border-radius: 8px;
+}
+
+#valorAnomalia {
+  font-size: 30px;
+  font-weight: bold;
+  color: #F18A48;
+  margin: 8px 0;
+}
+
+.estadisticas p {
+  font-size: 11px;
+  color: #A5ACB8;
+}
+
+/* GRÁFICA */
+
+.grafica {
+  flex: 1;
+  min-height: 190px;
+  display: flex;
+  flex-direction: column;
+}
+
+.contenedor-grafica {
+  flex: 1;
+  min-height: 150px;
+  min-width: 0;
+  position: relative;
+}
+
+/* MAPA */
+
+.mapa-contenedor {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 100vh;
+  background: #263746;
+}
+
+#mapa {
+  width: 100%;
+  height: 100%;
+}
+
+.leyenda {
+  position: absolute;
+  bottom: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #171C26E8;
+  padding: 12px 18px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 10px;
+  z-index: 500;
+  white-space: nowrap;
+}
+
+.escala {
+  width: 130px;
+  height: 9px;
+  border-radius: 10px;
+  background: linear-gradient(
+    to right,
+    #397FA9,
+    #E4BD65,
+    #E87942,
+    #C93632
+  );
+}
+
+.indicador-mapa {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #171C26E8;
+  padding: 14px 18px;
+  border-radius: 8px;
+  z-index: 500;
+}
+
+.indicador-mapa span {
+  display: block;
+  font-size: 9px;
+  color: #A5ACB8;
+  margin-bottom: 5px;
+}
+
+.indicador-mapa strong {
+  font-size: 15px;
+}
+
+footer {
+  font-size: 10px;
+  color: #7F8999;
+}
+
+/* MÓVILES */
+
+@media (max-width: 700px) {
+  body {
+    overflow: auto;
+  }
+
+  .experiencia {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .panel {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    height: auto;
+  }
+
+  .mapa-contenedor {
+    flex: none;
+    width: 100%;
+    height: 65vh;
+    min-height: 400px;
+  }
+
+  .grafica {
+    min-height: 230px;
+  }
+}
