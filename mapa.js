@@ -16,7 +16,7 @@ let mapa, cuadricula, valores, ultima;
 const capas = [];
 
 async function iniciarMapa() {
-  mapa = L.map('mapa', { center: [20, 0], zoom: 2, minZoom: 2, maxZoom: 10, worldCopyJump: true });
+  mapa = L.map('mapa', { center: [25, 10], zoom: 2, zoomSnap: 0.25, minZoom: 1.5, maxZoom: 10, worldCopyJump: true });
 
   L.tileLayer(
     'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
