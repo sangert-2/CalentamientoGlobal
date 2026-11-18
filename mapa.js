@@ -8,13 +8,13 @@ let ultimaAnomalia = 0;
 
 /* ---------- Escala de color (°C) ---------- */
 
-const ESCALA = [
-  { v: -1.0, c: [44, 123, 182] },
-  { v:  0.0, c: [171, 217, 233] },
-  { v:  0.5, c: [255, 255, 191] },
-  { v:  1.0, c: [253, 174, 97] },
-  { v:  2.0, c: [215, 25, 28] },
-  { v:  3.5, c: [127, 0, 0] }
+const ESCALA_COLOR = [
+  { valor: -0.5, color: [57, 127, 169] },
+  { valor: 0.0,  color: [190, 235, 200] },
+  { valor: 0.5,  color: [247, 238, 69] },
+  { valor: 1.0,  color: [245, 166, 35] },
+  { valor: 1.5,  color: [224, 58, 47] },
+  { valor: 2.5,  color: [122, 28, 140] }
 ];
 
 const URLS_PAISES = [
