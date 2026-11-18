@@ -1,8 +1,9 @@
+console.log('mapa.js v3 (países) cargado');
+
 let mapa;
 let capaPaises = null;
 let ultimaAnomalia = 0;
 
-// Escala de color fija (°C) para que los períodos sean comparables entre sí
 const ESCALA = [
   { v: -1.0, c: [44, 123, 182] },
   { v:  0.0, c: [171, 217, 233] },
@@ -12,9 +13,11 @@ const ESCALA = [
   { v:  3.5, c: [127, 0, 0] }
 ];
 
-// Fronteras de países (GeoJSON público)
-const URL_PAISES =
-  'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json';
+// Se prueba la primera URL y, si falla, la siguiente
+const URLS_PAISES = [
+  'https://cdn.jsdelivr.net/gh/johan/world.geo.json@master/countries.geo.json',
+  'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json'
+];
 
 function colorEscala(valor) {
   if (valor <= ESCALA[0].v) return ESCALA[0].c;
@@ -31,7 +34,6 @@ function colorEscala(valor) {
   return ESCALA[0].c;
 }
 
-// Amplificación según latitud (aprox.): Ártico ≈ 2.5x, trópicos ≈ 0.8x, Antártida ≈ 0.6x
 function factorLatitud(lat) {
   if (lat >= 0) {
     const t = Math.max(0, lat - 30) / 60;
@@ -45,29 +47,39 @@ function estiloPais(latitud) {
   const [r, g, b] = colorEscala(ultimaAnomalia * factorLatitud(latitud));
   return {
     fillColor: `rgb(${r},${g},${b})`,
-    fillOpacity: 0.8,
+    fillOpacity: 0.85,
     color: 'rgba(255,255,255,0.35)',
     weight: 0.6
   };
 }
 
+async function descargarGeoJSON() {
+  for (const url of URLS_PAISES) {
+    try {
+      const respuesta = await fetch(url);
+      if (respuesta.ok) return await respuesta.json();
+    } catch (error) {
+      console.warn('Falló la descarga desde', url);
+    }
+  }
+  throw new Error('No se pudo descargar el mapa de países');
+}
+
 async function cargarPaises() {
   try {
-    const respuesta = await fetch(URL_PAISES);
-    if (!respuesta.ok) throw new Error('No se pudo cargar el GeoJSON');
-    const geojson = await respuesta.json();
+    const geojson = await descargarGeoJSON();
 
     capaPaises = L.geoJSON(geojson, {
       style: () => estiloPais(0),
       interactive: false
     }).addTo(mapa);
 
-    // Guardamos la latitud central de cada país
     capaPaises.eachLayer(capa => {
       capa._latitud = capa.getBounds().getCenter().lat;
     });
 
     pintarPaises();
+    console.log('Países cargados:', capaPaises.getLayers().length);
   } catch (error) {
     console.error('Error al cargar los países:', error);
   }
@@ -98,7 +110,6 @@ function iniciarMapa() {
   cargarPaises();
 }
 
-// sketch.js llama a esta función cada vez que cambia el período
 function actualizarMapa(anomalia) {
   ultimaAnomalia = anomalia;
   pintarPaises();
