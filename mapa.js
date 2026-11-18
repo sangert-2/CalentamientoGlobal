@@ -1,4 +1,4 @@
-const ARCHIVO = 'Datos/mapa_calor.json';
+const ARCHIVO_MAPA = 'Datos/mapa_calor.json';
 const LIMITE = 85;
 const TAM = 720;
 const ESCALA_COLOR = [
@@ -26,7 +26,7 @@ async function iniciarMapa() {
   mapa.on('click', mostrarValor);
 
   try {
-    cuadricula = await (await fetch(ARCHIVO)).json();
+    cuadricula = await (await fetch(ARCHIVO_MAPA)).json();
     console.log('Cuadrícula cargada');
     if (ultima) actualizarMapa(...ultima);
   } catch (error) {
