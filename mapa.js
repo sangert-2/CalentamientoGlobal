@@ -1,5 +1,6 @@
 let mapa;
-let capaCalor;
+let capaPaises = null;
+let ultimaAnomalia = 0;
 
 // Escala de color fija (°C) para que los períodos sean comparables entre sí
 const ESCALA = [
@@ -11,10 +12,10 @@ const ESCALA = [
   { v:  3.5, c: [127, 0, 0] }
 ];
 
-const LIMITES_MAPA = [[-85.0511, -540], [85.0511, 540]];
-const ALTO_CANVAS = 512;
+// Fronteras de países (GeoJSON público)
+const URL_PAISES =
+  'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json';
 
-// Interpola el color de la escala para un valor dado
 function colorEscala(valor) {
   if (valor <= ESCALA[0].v) return ESCALA[0].c;
   if (valor >= ESCALA[ESCALA.length - 1].v) return ESCALA[ESCALA.length - 1].c;
@@ -27,10 +28,10 @@ function colorEscala(valor) {
       return a.c.map((canal, k) => Math.round(canal + (b.c[k] - canal) * t));
     }
   }
+  return ESCALA[0].c;
 }
 
-// Factor de amplificación según la latitud (aprox.):
-// Ártico ≈ 2.5x, trópicos ≈ 0.8x, Antártida ≈ 0.6x
+// Amplificación según latitud (aprox.): Ártico ≈ 2.5x, trópicos ≈ 0.8x, Antártida ≈ 0.6x
 function factorLatitud(lat) {
   if (lat >= 0) {
     const t = Math.max(0, lat - 30) / 60;
@@ -40,26 +41,41 @@ function factorLatitud(lat) {
   return 0.8 - 0.2 * t;
 }
 
-// Dibuja una imagen de 1 x ALTO píxeles; cada fila es una latitud.
-// Se calcula en proyección Mercator para que coincida con el mapa.
-function crearImagenCalor(anomaliaGlobal) {
-  const canvas = document.createElement('canvas');
-  canvas.width = 1;
-  canvas.height = ALTO_CANVAS;
-  const ctx = canvas.getContext('2d');
+function estiloPais(latitud) {
+  const [r, g, b] = colorEscala(ultimaAnomalia * factorLatitud(latitud));
+  return {
+    fillColor: `rgb(${r},${g},${b})`,
+    fillOpacity: 0.8,
+    color: 'rgba(255,255,255,0.35)',
+    weight: 0.6
+  };
+}
 
-  for (let y = 0; y < ALTO_CANVAS; y++) {
-    const mercY = (1 - (2 * (y + 0.5)) / ALTO_CANVAS) * Math.PI;
-    const lat = (Math.atan(Math.sinh(mercY)) * 180) / Math.PI;
+async function cargarPaises() {
+  try {
+    const respuesta = await fetch(URL_PAISES);
+    if (!respuesta.ok) throw new Error('No se pudo cargar el GeoJSON');
+    const geojson = await respuesta.json();
 
-    const valor = anomaliaGlobal * factorLatitud(lat);
-    const [r, g, b] = colorEscala(valor);
+    capaPaises = L.geoJSON(geojson, {
+      style: () => estiloPais(0),
+      interactive: false
+    }).addTo(mapa);
 
-    ctx.fillStyle = `rgb(${r},${g},${b})`;
-    ctx.fillRect(0, y, 1, 1);
+    // Guardamos la latitud central de cada país
+    capaPaises.eachLayer(capa => {
+      capa._latitud = capa.getBounds().getCenter().lat;
+    });
+
+    pintarPaises();
+  } catch (error) {
+    console.error('Error al cargar los países:', error);
   }
+}
 
-  return canvas.toDataURL();
+function pintarPaises() {
+  if (!capaPaises) return;
+  capaPaises.eachLayer(capa => capa.setStyle(estiloPais(capa._latitud)));
 }
 
 function iniciarMapa() {
@@ -79,46 +95,13 @@ function iniciarMapa() {
     }
   ).addTo(mapa);
 
-  capaCalor = L.imageOverlay(crearImagenCalor(0), LIMITES_MAPA, {
-    opacity: 0.55,
-    interactive: false
-  }).addTo(mapa);
-
-  agregarLeyenda();
+  cargarPaises();
 }
 
+// sketch.js llama a esta función cada vez que cambia el período
 function actualizarMapa(anomalia) {
-  if (!capaCalor) return;
-  capaCalor.setUrl(crearImagenCalor(anomalia));
-}
-
-function agregarLeyenda() {
-  const leyenda = L.control({ position: 'bottomright' });
-
-  leyenda.onAdd = () => {
-    const div = L.DomUtil.create('div', 'leyenda-calor');
-    const gradiente = ESCALA
-      .map(p => {
-        const pos = ((p.v - ESCALA[0].v) /
-          (ESCALA[ESCALA.length - 1].v - ESCALA[0].v)) * 100;
-        return `rgb(${p.c.join(',')}) ${pos}%`;
-      })
-      .join(', ');
-
-    div.innerHTML = `
-      <div style="background:rgba(20,24,32,.85);padding:8px 10px;border-radius:6px;
-                  color:#E8E8E8;font:11px sans-serif;">
-        <div style="margin-bottom:4px;">Anomalía estimada (°C)</div>
-        <div style="width:160px;height:10px;border-radius:3px;
-                    background:linear-gradient(to right, ${gradiente});"></div>
-        <div style="display:flex;justify-content:space-between;margin-top:2px;">
-          <span>−1</span><span>0</span><span>1</span><span>2</span><span>3,5</span>
-        </div>
-      </div>`;
-    return div;
-  };
-
-  leyenda.addTo(mapa);
+  ultimaAnomalia = anomalia;
+  pintarPaises();
 }
 
 window.addEventListener('load', iniciarMapa);
