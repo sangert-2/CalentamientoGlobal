@@ -18,9 +18,16 @@ const capas = [];
 async function iniciarMapa() {
   mapa = L.map('mapa', { center: [25, 10], zoom: 2, zoomSnap: 0.25, minZoom: 1.5, maxZoom: 10, worldCopyJump: true });
 
-  L.tileLayer(
-    'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+    L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
     { attribution: 'Tiles &copy; Esri', maxZoom: 10 }
+  ).addTo(mapa);
+
+  mapa.createPane('etiquetas');
+  Object.assign(mapa.getPane('etiquetas').style, { zIndex: 450, pointerEvents: 'none' });
+  L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
+    { pane: 'etiquetas', maxZoom: 10 }
   ).addTo(mapa);
 
   mapa.on('click', mostrarValor);
@@ -116,7 +123,7 @@ function actualizarMapa(promedioGlobal, desde, hasta) {
 
   if (!capas.length) {
     [-360, 0, 360].forEach(d => {
-      capas.push(L.imageOverlay(url, [[-LIMITE, -180 + d], [LIMITE, 180 + d]], { opacity: 0.75, interactive: false }).addTo(mapa));
+      capas.push(L.imageOverlay(url, [[-LIMITE, -180 + d], [LIMITE, 180 + d]], { opacity: 0.6, interactive: false }).addTo(mapa));
     });
   } else {
     capas.forEach(capa => capa.setUrl(url));
