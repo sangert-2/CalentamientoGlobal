@@ -16,18 +16,26 @@ let mapa, cuadricula, valores, ultima;
 const capas = [];
 
 async function iniciarMapa() {
-  mapa = L.map('mapa', { center: [25, 10], zoom: 2, zoomSnap: 0.25, minZoom: 1.5, maxZoom: 10, worldCopyJump: true });
+  mapa = L.map('mapa', {
+    center: [20, 0],
+    zoom: 2,
+    zoomSnap: 0.25,
+    minZoom: 2,
+    maxZoom: 10,
+    maxBounds: [[-85, -180], [85, 180]],
+    maxBoundsViscosity: 1.0
+  });
 
-    L.tileLayer(
+  L.tileLayer(
     'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
-    { attribution: 'Tiles &copy; Esri', maxZoom: 10 }
+    { attribution: 'Tiles &copy; Esri', maxZoom: 10, noWrap: true }
   ).addTo(mapa);
 
   mapa.createPane('etiquetas');
   Object.assign(mapa.getPane('etiquetas').style, { zIndex: 450, pointerEvents: 'none' });
   L.tileLayer(
     'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
-    { pane: 'etiquetas', maxZoom: 10 }
+    { pane: 'etiquetas', maxZoom: 10, noWrap: true }
   ).addTo(mapa);
 
   mapa.on('click', mostrarValor);
@@ -136,11 +144,26 @@ function mostrarValor(evento) {
   const valor = muestrear(valores, evento.latlng.lat, evento.latlng.lng);
   if (Number.isNaN(valor)) return;
 
-  L.popup()
+  const signo = valor >= 0 ? '+' : '';
+  const nivel =
+    valor < 0 ? 'Más frío que a finales del siglo XIX' :
+    valor < 0.5 ? 'Calentamiento leve' :
+    valor < 1 ? 'Calentamiento moderado' :
+    valor < 1.5 ? 'Calentamiento alto' :
+    'Calentamiento muy alto';
+
+  const comparacion = valor >= 0 ? 'más alta' : 'más baja';
+
+  L.popup({ maxWidth: 240 })
     .setLatLng(evento.latlng)
     .setContent(
-      `<strong>${valor >= 0 ? '+' : ''}${valor.toFixed(2)} °C</strong><br>` +
-      `Promedio ${ultima[1]} – ${ultima[2]}<br><small>respecto a 1880–1900</small>`
+      `<div style="font-size:13px;line-height:1.45">` +
+      `<div style="font-size:22px;font-weight:bold">${signo}${valor.toFixed(2)} °C</div>` +
+      `<div style="font-weight:bold;margin-bottom:6px">${nivel}</div>` +
+      `En esta zona, la temperatura promedio entre ${ultima[1]} y ${ultima[2]} fue ` +
+      `<strong>${Math.abs(valor).toFixed(2)} °C ${comparacion}</strong> ` +
+      `que el promedio de 1880 a 1900, antes de que el calentamiento global se acelerara.` +
+      `</div>`
     )
     .openOn(mapa);
 }
