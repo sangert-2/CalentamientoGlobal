@@ -123,7 +123,7 @@ function actualizarMapa(promedioGlobal, desde, hasta) {
 
   if (!capas.length) {
     [-360, 0, 360].forEach(d => {
-      capas.push(L.imageOverlay(url, [[-LIMITE, -180 + d], [LIMITE, 180 + d]], { opacity: 0.20, interactive: false }).addTo(mapa));
+      capas.push(L.imageOverlay(url, [[-LIMITE, -180 + d], [LIMITE, 180 + d]], { opacity: 0.35, interactive: false }).addTo(mapa));
     });
   } else {
     capas.forEach(capa => capa.setUrl(url));
